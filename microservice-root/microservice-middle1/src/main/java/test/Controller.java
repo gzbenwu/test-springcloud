@@ -19,6 +19,9 @@ public class Controller {
 	@Value("${server.port}")
 	private String port;
 
+	@Value("${custom.testpw}")
+	private String testpw;
+
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -29,6 +32,7 @@ public class Controller {
 		map.put("port", port);
 		map.put("appConfigKey", appConfigKey);
 		map.put("linkTo", end1);
+		map.put("testpw", testpw);
 		return map;
 	}
 }
