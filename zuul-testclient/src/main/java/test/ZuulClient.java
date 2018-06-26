@@ -15,23 +15,21 @@ import com.netflix.zuul.context.RequestContext;
 // @EnableZuulServer
 @SpringCloudApplication
 @EnableZuulProxy
-public class ZuulServer {
+public class ZuulClient {
 	public static void main(String[] args) {
-		SpringApplication.run(ZuulServer.class, args);
+		SpringApplication.run(ZuulClient.class, args);
 	}
 
 	@Bean
-	public ZuulFilter filter(@Value("${custom.serverid}") String id, @Value("${custom.zuul.shouldFilter:true}") String shouldFilter) {
-		return new Filter(id, shouldFilter);
+	public ZuulFilter filter(@Value("${custom.zuul.shouldFilter:true}") String shouldFilter) {
+		return new Filter(shouldFilter);
 	}
 
 	class Filter extends ZuulFilter {
 		private String shouldFilter;
-		private String id;
 
-		public Filter(String id, String shouldFilter) {
+		public Filter(String shouldFilter) {
 			this.shouldFilter = shouldFilter;
-			this.id = id;
 		}
 
 		/**
@@ -68,7 +66,7 @@ public class ZuulServer {
 		public Object run() {
 			RequestContext ctx = RequestContext.getCurrentContext();
 			HttpServletRequest request = ctx.getRequest();
-			System.out.println(">>>>>>>>>>>>>>zuul-server-" + id + " request: " + request.getRequestURI());
+			System.out.println("----------zuul-client request: " + request.getRequestURI());
 			return null;
 		}
 	}

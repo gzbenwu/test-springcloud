@@ -12,6 +12,7 @@
 	<modules>
 		<module>servers-root</module>
 		<module>microservice-root</module>
+		<module>zuul-testclient</module>
 	</modules>
 
 	<properties>
