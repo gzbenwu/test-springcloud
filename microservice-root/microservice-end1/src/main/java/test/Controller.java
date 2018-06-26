@@ -20,6 +20,9 @@ public class Controller {
 	@Value("${custom.serverid}")
 	private String test;
 
+	@Value("${git.props}")
+	private String gitProps;
+
 	@Value("${local.application}")
 	private String localAppProps;
 
@@ -30,6 +33,7 @@ public class Controller {
 		map.put("appConfigKey", appConfigKey);
 		map.put("test", test);
 		map.put("localAppProp", localAppProps);
+		map.put("gitProps", gitProps);
 		return map;
 	}
 }
