@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,5 +44,19 @@ public class Controller {
 		map.put("chooseServiceMeta", serviceInstance.getMetadata());
 		map.put("chooseServicePort", serviceInstance.getPort());
 		return map;
+	}
+
+	@RequestMapping(value = "/param/{paramName}/get", method = { RequestMethod.GET })
+	public Map<String, String> getParam(@PathVariable("paramName") String paramName) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("paramName", paramName);
+		return map;
+	}
+
+	@RequestMapping(value = "/param/{paramName}/post/{paramValue}", method = { RequestMethod.POST })
+	public Map<String, String> setParam(@PathVariable("paramName") String paramName, @PathVariable("paramValue") String paramValue, @RequestBody Map<String, String> body) {
+		body.put("paramName", paramName);
+		body.put("paramValue", paramValue);
+		return body;
 	}
 }
