@@ -13,9 +13,6 @@ public class CustomHealthChecker implements HealthIndicator {
 		Health h = null;
 		int s = new Random().nextInt(100);
 		switch (s) {
-		case 0:
-			h = new Health.Builder().up().withDetail("health", "Good").build();
-			break;
 		case 1:
 			h = new Health.Builder().down().withDetail("health", "Dead").build();
 			break;
@@ -24,6 +21,9 @@ public class CustomHealthChecker implements HealthIndicator {
 			break;
 		case 3:
 			h = new Health.Builder().outOfService().withDetail("health", "Bad").withException(new Exception("E2")).build();
+			break;
+		default:
+			h = new Health.Builder().up().withDetail("health", "Good").withDetail("ok?", "yes").build();
 			break;
 		}
 		return h;
