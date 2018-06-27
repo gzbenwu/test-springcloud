@@ -11,7 +11,7 @@ public class CustomHealthChecker implements HealthIndicator {
 	@Override
 	public Health health() {
 		Health h = null;
-		int s = new Random().nextInt(4);
+		int s = new Random().nextInt(100);
 		switch (s) {
 		case 0:
 			h = new Health.Builder().up().withDetail("health", "Good").build();
