@@ -34,7 +34,7 @@ public class Controller {
 
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	public Map<String, Object> getServerLink() {
-		Map<String, String> end1 = restTemplate.getForObject("http://microservice-end1/microservice-end1/serverLink", Map.class);
+		Map<String, String> end1 = restTemplate.getForObject("http://microservice-end1/serverLink", Map.class);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("port", port);
 		map.put("appConfigKey", appConfigKey);

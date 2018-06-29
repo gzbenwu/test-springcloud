@@ -11,12 +11,12 @@ import java.util.Map;
 @FeignClient(name = "microservice-middle1")
 public interface ServiceLinkClient {
 
-	@RequestMapping(value = "/microservice-middle1/serverLink", method = { RequestMethod.GET })
+	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	Map<String, Object> getSubServerLink();
 
-	@RequestMapping(value = "/microservice-middle1/param/{paramName}/get", method = { RequestMethod.GET })
+	@RequestMapping(value = "/param/{paramName}/get", method = { RequestMethod.GET })
 	Map<String, String> getParam(@PathVariable("paramName") String paramName);
 
-	@RequestMapping(value = "/microservice-middle1/param/{paramName}/post/{paramValue}", method = { RequestMethod.POST })
+	@RequestMapping(value = "/param/{paramName}/post/{paramValue}", method = { RequestMethod.POST })
 	Map<String, String> setParam(@PathVariable("paramName") String paramName, @PathVariable("paramValue") String paramValue, @RequestBody Map<String, String> body);
 }

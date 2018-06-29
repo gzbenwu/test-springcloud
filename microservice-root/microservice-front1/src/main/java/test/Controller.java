@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +20,14 @@ public class Controller {
 	private String port;
 
 	@Autowired
+	private RestTemplate restTemplate;
+
+	@Autowired
 	private ServiceLinkClient serviceLinkClient;
 
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	public Map<String, Object> getServerLink() {
-		Map<String, Object> sub = serviceLinkClient.getSubServerLink();
+		Map<String, String> sub = restTemplate.getForObject("http://microservice-middle1/serverLink", Map.class);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("port", port);
 		map.put("appConfigKey", appConfigKey);
