@@ -1,13 +1,21 @@
 package test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import test.entity.PrimaryEntity;
+import test.entity.SubEntity;
+import test.entity.repository.PrimaryEntityRepository;
+import test.entity.repository.SubEntityRepository;
+
+import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +37,11 @@ public class Controller {
 	@Value("${local.application}")
 	private String localAppProps;
 
+	@Autowired
+	private PrimaryEntityRepository primaryEntityRepository;
+	@Autowired
+	private SubEntityRepository subEntityRepository;
+
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	public Map<String, Object> getServerLink(HttpServletRequest req) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -45,5 +58,19 @@ public class Controller {
 		}
 		map.put("RequestHeaders_inend", headers);
 		return map;
+	}
+
+	@RequestMapping(value = "/saveOne", method = { RequestMethod.POST })
+	public String saveOne() {
+		SubEntity se = new SubEntity();
+		se.setStringData(UUID.randomUUID().toString());
+		se.setTimeData(LocalDateTime.now());
+		se = subEntityRepository.save(se);
+
+		PrimaryEntity pe = new PrimaryEntity();
+		pe.setPrimaryData(UUID.randomUUID().toString());
+		pe.setSubEntity(se);
+		primaryEntityRepository.save(pe);
+		return "OK";
 	}
 }
