@@ -15,8 +15,8 @@ public interface ServiceLinkClient {
 	Map<String, Object> getSubServerLink();
 
 	@RequestMapping(value = "/param/{paramName}/get", method = { RequestMethod.GET })
-	Map<String, String> getParam(@PathVariable("paramName") String paramName);
+	Map<String, Object> getParam(@PathVariable("paramName") String paramName);
 
 	@RequestMapping(value = "/param/{paramName}/post/{paramValue}", method = { RequestMethod.POST })
-	Map<String, String> setParam(@PathVariable("paramName") String paramName, @PathVariable("paramValue") String paramValue, @RequestBody Map<String, String> body);
+	Map<String, Object> setParam(@PathVariable("paramName") String paramName, @PathVariable("paramValue") String paramValue, @RequestBody Map<String, Object> body);
 }
