@@ -4,10 +4,13 @@ import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import test.entity.autoincrement.AutoIncrementId;
 
@@ -19,19 +22,25 @@ public class PrimaryEntity extends BaseEntity {
 	@Field
 	@AutoIncrementId
 	@NotNull(message = "id cannot be null")
+	@NotBlank(message = "id cannot be empty")
 	private String id;
 
 	@Field
 	@NotNull(message = "primaryData cannot be null")
+	@NotBlank(message = "primaryData cannot be empty")
 	private String primaryData;
 
 	@Field("tData")
 	@NotNull(message = "timeData cannot be null")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime timeData;
 
 	@Field
 	@DBRef
 	private SubEntity subEntity;
+
+	@Field
+	private SubEntity subEntityBody;
 
 	@Field
 	private String subEntityId;
@@ -66,14 +75,21 @@ public class PrimaryEntity extends BaseEntity {
 
 	public void setSubEntity(SubEntity subEntity) {
 		this.subEntity = subEntity;
-		if (subEntity == null) {
-			this.subEntityId = null;
-		} else {
-			this.subEntityId = subEntity.getId();
-		}
 	}
 
 	public String getSubEntityId() {
 		return subEntityId;
+	}
+
+	public void setSubEntityId(String subEntityId) {
+		this.subEntityId = subEntityId;
+	}
+
+	public SubEntity getSubEntityBody() {
+		return subEntityBody;
+	}
+
+	public void setSubEntityBody(SubEntity subEntityBody) {
+		this.subEntityBody = subEntityBody;
 	}
 }

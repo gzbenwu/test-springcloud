@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Document(collection = "sub_entity")
 public class SubEntity extends BaseEntity {
@@ -15,14 +18,17 @@ public class SubEntity extends BaseEntity {
 	@Id
 	@Field
 	@NotNull(message = "id cannot be null")
+	@NotBlank(message = "id cannot be empty")
 	private String id;
 
 	@Field("sData")
 	@NotNull(message = "stringData cannot be null")
+	@NotBlank(message = "stringData cannot be empty")
 	private String stringData;
 
 	@Field
 	@NotNull(message = "timeData cannot be null")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime timeData;
 
 	public String getId() {

@@ -27,7 +27,7 @@ public class SaveMongoEventListener extends AbstractMongoEventListener<BaseEntit
 			ReflectionUtils.doWithFields(entity.getClass(), new ReflectionUtils.FieldCallback() {
 				public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 					ReflectionUtils.makeAccessible(field);
-					if (field.isAnnotationPresent(AutoIncrementId.class)) {
+					if (field.isAnnotationPresent(AutoIncrementId.class) && field.get(entity) == null) {
 						field.set(entity, getNextId(event.getCollectionName()));
 					}
 				}

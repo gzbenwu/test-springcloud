@@ -3,41 +3,40 @@ package test.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.repository.NoRepositoryBean;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@NoRepositoryBean
 public abstract class BaseEntity implements Serializable {
 	private static final long serialVersionUID = 3715010457208936143L;
 
 	@Version
 	@Field
-	@NotNull(message = "version cannot be null")
 	private Long version;
 
 	@CreatedDate
 	@Field
-	@NotNull(message = "createdDate cannot be null")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDateTime createdDate;
 
 	@CreatedBy
 	@Field
-	@NotNull(message = "createdBy cannot be null")
 	private String createdBy;
 
 	@LastModifiedDate
 	@Field
-	@NotNull(message = "lastModifiedDate cannot be null")
+	@JsonFormat(pattern = "HH:mm:ss")
 	private LocalDateTime lastModifiedDate;
 
 	@LastModifiedBy
 	@Field
-	@NotNull(message = "lastModifiedBy cannot be null")
 	private String lastModifiedBy;
 
 	public Long getVersion() {

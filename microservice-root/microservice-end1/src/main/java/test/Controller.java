@@ -2,6 +2,9 @@ package test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +19,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 public class Controller {
@@ -69,8 +74,38 @@ public class Controller {
 
 		PrimaryEntity pe = new PrimaryEntity();
 		pe.setPrimaryData(UUID.randomUUID().toString());
+		pe.setTimeData(LocalDateTime.now());
 		pe.setSubEntity(se);
+		pe.setSubEntityId(se.getId());
+		pe.setSubEntityBody(se);
 		primaryEntityRepository.save(pe);
-		return "OK";
+		return "saveOne";
+	}
+
+	@RequestMapping(value = "/updatePrimary", method = { RequestMethod.POST })
+	public String saveOne(@Valid @RequestBody PrimaryEntity entity) {
+		PrimaryEntity pe = primaryEntityRepository.findOne(entity.getId());
+		pe.setPrimaryData(entity.getPrimaryData());
+		pe.setTimeData(entity.getTimeData());
+		primaryEntityRepository.save(pe);
+		return "updatePrimary";
+	}
+
+	@RequestMapping(value = "/getPrimary/{id}", method = { RequestMethod.GET })
+	public PrimaryEntity getOne(@PathVariable("id") String id) {
+		PrimaryEntity pe = primaryEntityRepository.findOne(id);
+		return pe;
+	}
+
+	@RequestMapping(value = "/updateSub", method = { RequestMethod.POST })
+	public String saveOne(@Valid @RequestBody SubEntity entity, BindingResult validResult) {
+		if (validResult.hasErrors()) {
+			return validResult.getAllErrors().stream().map((or) -> or.getCode() + ":" + or.getDefaultMessage()).collect(Collectors.toList()).toString();
+		}
+		SubEntity pe = subEntityRepository.findOne(entity.getId());
+		pe.setStringData(entity.getStringData());
+		pe.setTimeData(entity.getTimeData());
+		subEntityRepository.save(pe);
+		return "updateSub";
 	}
 }
