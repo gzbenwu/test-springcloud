@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @RestController
 public class Controller {
@@ -29,13 +31,16 @@ public class Controller {
 	private ServiceLinkClient serviceLinkClient;
 
 	@RequestMapping(value = "/headerPass", method = { RequestMethod.GET })
-	public Map<String, Object> headerPass(HttpServletRequest req) {
+	public Map<String, Object> headerPass(HttpServletRequest req, HttpServletResponse res, HttpSession hs) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Enumeration<String> hns = req.getHeaderNames();
 		while (hns.hasMoreElements()) {
 			String header = hns.nextElement();
 			map.put(header, req.getHeader(header));
 		}
+		res.addHeader("HD_SEN_ALL", "SSSSSSS");
+		res.addHeader("HD_IRN_ALL", "IIIIII");
+		res.addHeader("A", "111111");
 		return map;
 	}
 

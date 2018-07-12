@@ -47,6 +47,8 @@ public class CustomZuulFilter extends ZuulFilter {
 	@Override
 	public Object run() {
 		RequestContext ctx = RequestContext.getCurrentContext();
+		ctx.addZuulRequestHeader("ZuulRequestHeader", "ZuulServerAddedMe");
+		ctx.addZuulResponseHeader("ZuulResponseHeader", "ZuulServerAddedMe");
 		HttpServletRequest request = ctx.getRequest();
 		System.out.println(">>>>>>>>>>>>>>zuul-server-" + id + " request: " + request.getRequestURI());
 		return null;
