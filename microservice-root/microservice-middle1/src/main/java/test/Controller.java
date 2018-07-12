@@ -6,6 +6,7 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,7 @@ public class Controller {
 	@RequestMapping(value = "/headerPass", method = { RequestMethod.GET })
 	public Map<String, Object> headerPass(HttpServletRequest req) {
 		Map<String, Object> main = new HashMap<String, Object>();
+		@SuppressWarnings("unchecked")
 		Map<String, Object> front1 = restTemplate.getForObject("http://zuul-server/front1/headerPass", Map.class);
 		main.put("front1Server", front1);
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -52,6 +54,7 @@ public class Controller {
 
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	public Map<String, Object> getServerLink(HttpServletRequest req) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> end1 = restTemplate.getForObject("http://microservice-end1/serverLink", Map.class);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("port", port);
@@ -72,9 +75,10 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/param/{paramName}/get", method = { RequestMethod.GET })
-	public Map<String, Object> getParam(@PathVariable("paramName") String paramName, HttpServletRequest req) {
+	public Map<String, Object> getParam(@PathVariable("paramName") String paramName, @RequestHeader("H1") String h1, HttpServletRequest req) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("paramName", paramName);
+		map.put("Header:H1", h1);
 		Map<String, Object> headers = new HashMap<String, Object>();
 		Enumeration<String> hns = req.getHeaderNames();
 		while (hns.hasMoreElements()) {

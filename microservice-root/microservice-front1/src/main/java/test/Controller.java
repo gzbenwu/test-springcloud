@@ -41,6 +41,7 @@ public class Controller {
 
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	public Map<String, Object> getServerLink(HttpServletRequest req) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> sub = restTemplate.getForObject("http://microservice-middle1/serverLink", Map.class);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("port", port);
@@ -61,7 +62,7 @@ public class Controller {
 		Map<String, Object> body = new HashMap<String, Object>();
 		body.put("timestamp", System.currentTimeMillis() + "");
 		Map<String, Map<String, Object>> map = new HashMap<String, Map<String, Object>>();
-		map.put("get", serviceLinkClient.getParam("P1"));
+		map.put("get", serviceLinkClient.getParam("P1", "TestHeader1"));
 		map.put("post", serviceLinkClient.setParam("P2", "Valueeeeee", body));
 		Map<String, Object> headers = new HashMap<String, Object>();
 		Enumeration<String> hns = req.getHeaderNames();
