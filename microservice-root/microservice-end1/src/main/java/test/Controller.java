@@ -19,7 +19,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -99,9 +98,11 @@ public class Controller {
 
 	@RequestMapping(value = "/updateSub", method = { RequestMethod.POST })
 	public String saveOne(@Valid @RequestBody SubEntity entity, BindingResult validResult) {
-		if (validResult.hasErrors()) {
-			return validResult.getAllErrors().stream().map((or) -> or.getCode() + ":" + or.getDefaultMessage()).collect(Collectors.toList()).toString();
+		String msg = RestExceptionHandler.handleArgumentNotValid(validResult);
+		if (msg != null) {
+			return "[Build By Controller] " + msg;
 		}
+
 		SubEntity pe = subEntityRepository.findOne(entity.getId());
 		pe.setStringData(entity.getStringData());
 		pe.setTimeData(entity.getTimeData());

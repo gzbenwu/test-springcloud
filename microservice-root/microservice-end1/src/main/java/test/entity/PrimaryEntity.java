@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import test.entity.autoincrement.AutoIncrementId;
+import test.entity.validator.TestValidatorAnnotation;
 
 @Document(collection = "primary_entity")
 public class PrimaryEntity extends BaseEntity {
@@ -28,6 +29,7 @@ public class PrimaryEntity extends BaseEntity {
 	@Field
 	@NotNull(message = "primaryData cannot be null")
 	@NotBlank(message = "primaryData cannot be empty")
+	@TestValidatorAnnotation
 	private String primaryData;
 
 	@Field("tData")
@@ -43,6 +45,7 @@ public class PrimaryEntity extends BaseEntity {
 	private SubEntity subEntityBody;
 
 	@Field
+	@TestValidatorAnnotation(message = "Custome Validate Msg!")
 	private String subEntityId;
 
 	public String getId() {

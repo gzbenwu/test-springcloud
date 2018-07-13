@@ -2,15 +2,21 @@ package test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +44,43 @@ public class RestExceptionHandler {
 	@ExceptionHandler(RuntimeException.class)
 	public String runtimeExceptionHandler(HttpServletRequest req, RuntimeException ex) {
 		return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public String runtimeExceptionHandler(HttpServletRequest req, MethodArgumentNotValidException ex) {
+		String msg = handleArgumentNotValid(ex.getBindingResult());
+		if (msg == null) {
+			return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+		} else {
+			return "[Build By RestExceptionHandler] " + msg;
+		}
+	}
+
+	public static String handleArgumentNotValid(BindingResult validResult) {
+		if (validResult != null && validResult.hasErrors()) {
+			return validResult.getAllErrors().stream().map((or) -> {
+				StringBuilder codes = new StringBuilder();
+				for (Object o : or.getArguments()) {
+					if (o instanceof DefaultMessageSourceResolvable) {
+						continue;
+					}
+					MessageSourceResolvable msr = (MessageSourceResolvable) o;
+					codes.append(msr.getDefaultMessage() + ",");
+				}
+
+				String info;
+				if (or instanceof FieldError) {
+					FieldError fe = (FieldError) or;
+					info = "[" + fe.getObjectName() + "|" + fe.getField() + "|" + fe.getRejectedValue() + "]";
+				} else {
+					info = "[" + or.getObjectName() + "]";
+				}
+
+				return info + " {" + codes + "} " + or.getCode() + ":" + or.getDefaultMessage();
+			}).collect(Collectors.toList()).toString();
+		} else {
+			return null;
+		}
 	}
 
 	@ExceptionHandler(NoSuchMethodException.class)
