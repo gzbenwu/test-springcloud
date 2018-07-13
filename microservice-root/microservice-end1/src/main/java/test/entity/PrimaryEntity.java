@@ -40,7 +40,7 @@ public class PrimaryEntity extends BaseEntity {
 	private LocalDateTime timeData;
 
 	@Field
-	@DBRef
+	@DBRef(lazy = true)
 	private SubEntity subEntity;
 
 	@Field

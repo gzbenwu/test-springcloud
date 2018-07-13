@@ -108,6 +108,8 @@ public class Controller {
 	@RequestMapping(value = "/getPrimary/{id}", method = { RequestMethod.GET })
 	public PrimaryEntity getOne(@PathVariable("id") String id) {
 		PrimaryEntity pe = primaryEntityRepository.findOne(id);
+		// Lazy模式下，当调用该对象的时候才会再次到MongoDB中获取对象数据。如果在这里把该代理对象去掉，就可以不再关联了。
+		pe.setSubEntity(null);
 		return pe;
 	}
 
