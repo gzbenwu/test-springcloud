@@ -52,5 +52,12 @@
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 		<!-- 以上配置用于解决LocalDateTime参数传入时解悉出错的问题。该问题在Springboot2.0以上版本已修复 -->
+
+		<!-- 使用Validator @SafeHtml时要用到的第三方包 -->
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.3</version>
+		</dependency>
 	</dependencies>
 </project>

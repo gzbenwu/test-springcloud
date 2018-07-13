@@ -20,9 +20,19 @@ public @interface TestValidatorAnnotation {
 
 	String code1() default "0000A";
 
-	String code2() default "0000B";
+	boolean code2() default true;
 
-	String code3() default "0000C";
+	short code3() default 9;
+
+	int code4() default 123;
+
+	long code5() default 999;
+
+	double code6() default 0.001;
+
+	float code7() default 1.999F;
+
+	String code8() default "0000B";
 
 	Class<?>[] groups() default {};
 

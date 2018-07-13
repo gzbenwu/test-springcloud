@@ -61,11 +61,12 @@ public class RestExceptionHandler {
 			return validResult.getAllErrors().stream().map((or) -> {
 				StringBuilder codes = new StringBuilder();
 				for (Object o : or.getArguments()) {
-					if (o instanceof DefaultMessageSourceResolvable) {
-						continue;
+					if (o instanceof MessageSourceResolvable && !(o instanceof DefaultMessageSourceResolvable)) {
+						MessageSourceResolvable msr = (MessageSourceResolvable) o;
+						codes.append(msr.getDefaultMessage() + ",");
+					} else if (o instanceof Boolean || o instanceof Integer || o instanceof Long || o instanceof Double || o instanceof Float || o instanceof Short) {
+						codes.append(o + ",");
 					}
-					MessageSourceResolvable msr = (MessageSourceResolvable) o;
-					codes.append(msr.getDefaultMessage() + ",");
 				}
 
 				String info;
@@ -76,7 +77,7 @@ public class RestExceptionHandler {
 					info = "[" + or.getObjectName() + "]";
 				}
 
-				return info + " {" + codes + "} " + or.getCode() + ":" + or.getDefaultMessage();
+				return info + " {" + codes + "} " + or.getCode() + ":" + or.getDefaultMessage() + "\n";
 			}).collect(Collectors.toList()).toString();
 		} else {
 			return null;
