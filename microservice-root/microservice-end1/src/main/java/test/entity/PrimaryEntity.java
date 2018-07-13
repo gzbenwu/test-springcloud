@@ -3,6 +3,7 @@ package test.entity;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import test.entity.autoincrement.AutoIncrementId;
 import test.entity.validator.TestValidatorAnnotation;
+import test.entity.validator.ValidtorGroup_NeedCheck;
 
 @Document(collection = "primary_entity")
 public class PrimaryEntity extends BaseEntity {
@@ -29,7 +31,7 @@ public class PrimaryEntity extends BaseEntity {
 	@Field
 	@NotNull(message = "primaryData cannot be null")
 	@NotBlank(message = "primaryData cannot be empty")
-	@TestValidatorAnnotation
+	@TestValidatorAnnotation(groups = { Default.class, ValidtorGroup_NeedCheck.class })
 	private String primaryData;
 
 	@Field("tData")

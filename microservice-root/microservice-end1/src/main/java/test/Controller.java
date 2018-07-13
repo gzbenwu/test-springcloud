@@ -3,6 +3,7 @@ package test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,8 @@ import test.entity.PrimaryEntity;
 import test.entity.SubEntity;
 import test.entity.repository.PrimaryEntityRepository;
 import test.entity.repository.SubEntityRepository;
+import test.entity.validator.ValidtorGroup_NeedCheck;
+import test.entity.validator.ValidtorGroup_NoNeedCheck;
 
 import java.time.LocalDateTime;
 import java.util.Enumeration;
@@ -88,10 +91,9 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/updatePrimary", method = { RequestMethod.POST })
-	public String saveOne(@Valid @RequestBody PrimaryEntity entity) {
-		entity.setPrimaryData(null);
+	public String saveOne(@Validated({ ValidtorGroup_NoNeedCheck.class }) @RequestBody PrimaryEntity entity) {
 		StringBuilder sb = new StringBuilder();
-		Set<ConstraintViolation<PrimaryEntity>> result = validator.validate(entity, new Class[] {});
+		Set<ConstraintViolation<PrimaryEntity>> result = validator.validate(entity, new Class[] { ValidtorGroup_NeedCheck.class });
 		for (ConstraintViolation<PrimaryEntity> cv : result) {
 			sb.append(cv.getMessageTemplate()).append(", ");
 		}
