@@ -18,10 +18,13 @@ import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validator;
 
 @RestController
 public class Controller {
@@ -40,6 +43,9 @@ public class Controller {
 
 	@Value("${local.application}")
 	private String localAppProps;
+
+	@Autowired
+	private Validator validator;
 
 	@Autowired
 	private PrimaryEntityRepository primaryEntityRepository;
@@ -83,11 +89,18 @@ public class Controller {
 
 	@RequestMapping(value = "/updatePrimary", method = { RequestMethod.POST })
 	public String saveOne(@Valid @RequestBody PrimaryEntity entity) {
+		entity.setPrimaryData(null);
+		StringBuilder sb = new StringBuilder();
+		Set<ConstraintViolation<PrimaryEntity>> result = validator.validate(entity, new Class[] {});
+		for (ConstraintViolation<PrimaryEntity> cv : result) {
+			sb.append(cv.getMessageTemplate()).append(", ");
+		}
+
 		PrimaryEntity pe = primaryEntityRepository.findOne(entity.getId());
 		pe.setPrimaryData(entity.getPrimaryData());
 		pe.setTimeData(entity.getTimeData());
 		primaryEntityRepository.save(pe);
-		return "updatePrimary";
+		return sb.toString().isEmpty() ? "updatePrimary" : sb.toString();
 	}
 
 	@RequestMapping(value = "/getPrimary/{id}", method = { RequestMethod.GET })
