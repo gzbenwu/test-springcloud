@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import test.entity.PrimaryEntity;
 import test.entity.SubEntity;
 import test.entity.repository.PrimaryEntityRepository;
@@ -54,9 +57,11 @@ public class Controller {
 	private PrimaryEntityRepository primaryEntityRepository;
 	@Autowired
 	private SubEntityRepository subEntityRepository;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
-	public Map<String, Object> getServerLink(HttpServletRequest req) {
+	public String getServerLink(HttpServletRequest req) throws JsonProcessingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("port", port);
 		map.put("appConfigKey", appConfigKey);
@@ -70,7 +75,7 @@ public class Controller {
 			headers.put(header, req.getHeader(header));
 		}
 		map.put("RequestHeaders_inend", headers);
-		return map;
+		return objectMapper.writeValueAsString(map);
 	}
 
 	@RequestMapping(value = "/saveOne", method = { RequestMethod.POST })

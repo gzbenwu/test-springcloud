@@ -29,6 +29,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -68,6 +69,7 @@ public abstract class BaseEntity implements Serializable {
 	@NotNull(groups = ValidtorGroup_NoNeedCheck.class)
 	private Object onlyForListAllConditions;
 
+	@Transient
 	@NotEmpty
 	@NotBlank
 	@Pattern(regexp = "[a-z-A-Z]*")
