@@ -36,7 +36,6 @@ public class PrimaryEntity extends BaseEntity {
 
 	@Field("tData")
 	@NotNull(message = "timeData cannot be null")
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime timeData;
 
 	@Field
@@ -66,10 +65,12 @@ public class PrimaryEntity extends BaseEntity {
 		this.primaryData = primaryData;
 	}
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public LocalDateTime getTimeData() {
 		return timeData;
 	}
 
+	@JsonFormat(pattern = "yyyy MM/dd HH:mm:ss")
 	public void setTimeData(LocalDateTime timeData) {
 		this.timeData = timeData;
 	}
