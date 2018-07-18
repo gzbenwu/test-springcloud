@@ -2,6 +2,11 @@ package test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +26,7 @@ import test.entity.repository.SubEntityRepository;
 import test.entity.validator.ValidtorGroup_NeedCheck;
 import test.entity.validator.ValidtorGroup_NoNeedCheck;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -35,9 +42,6 @@ import javax.validation.Validator;
 @RestController
 public class Controller {
 
-	@Value("${custom.test.appConfigKey}")
-	private String appConfigKey;
-
 	@Value("${server.port}")
 	private String port;
 
@@ -47,12 +51,13 @@ public class Controller {
 	@Value("${git.props}")
 	private String gitProps;
 
-	@Value("${local.application}")
-	private String localAppProps;
+	@Autowired
+	private ConfigrationPropertySource configrationPropertySource;
 
 	@Autowired
 	private Validator validator;
-
+	@Autowired
+	private RestTemplate restTemplate;
 	@Autowired
 	private PrimaryEntityRepository primaryEntityRepository;
 	@Autowired
@@ -64,9 +69,9 @@ public class Controller {
 	public String getServerLink(HttpServletRequest req) throws JsonProcessingException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("port", port);
-		map.put("appConfigKey", appConfigKey);
+		map.put("appConfigKey", configrationPropertySource.getAppConfigKey());
 		map.put("test", test);
-		map.put("localAppProp", localAppProps);
+		map.put("localAppProp", configrationPropertySource.getApplication());
 		map.put("gitProps", gitProps);
 		Map<String, Object> headers = new HashMap<String, Object>();
 		Enumeration<String> hns = req.getHeaderNames();
@@ -130,5 +135,25 @@ public class Controller {
 		pe.setTimeData(entity.getTimeData());
 		subEntityRepository.save(pe);
 		return "updateSub";
+	}
+
+	@RequestMapping(value = "/transformOne", method = { RequestMethod.POST })
+	public String transformOne(@RequestBody SubEntity entity) {
+		return "{\"timeData\":\"2012 10/12 12:12:12\"}";
+	}
+
+	@RequestMapping(value = "/transformRestTemplate", method = { RequestMethod.POST })
+	public SubEntity transformRestTemplate(@RequestBody SubEntity entity) {
+		try {
+			String json = "{\"timeData\":\"2000 10/12 12:12:12\"}";
+			HttpHeaders hh = new HttpHeaders();
+			hh.setContentType(MediaType.APPLICATION_JSON_UTF8);
+			RequestEntity<String> re = new RequestEntity<String>(json, hh, HttpMethod.POST, new URI("http://microservice-end1/transformOne"));
+			ResponseEntity<SubEntity> res = restTemplate.exchange(re, SubEntity.class);
+			return res.getBody();
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return null;
 	}
 }
