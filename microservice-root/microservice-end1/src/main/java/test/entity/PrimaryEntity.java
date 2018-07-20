@@ -1,7 +1,8 @@
 package test.entity;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
@@ -10,6 +11,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import test.entity.autoincrement.AutoIncrementId;
 import test.entity.validator.TestValidatorAnnotation;
@@ -34,7 +37,8 @@ public class PrimaryEntity extends BaseEntity {
 
 	@Field("tData")
 	@NotNull(message = "timeData cannot be null")
-	private LocalDateTime timeData;
+	@Future
+	private Date timeData;
 
 	@Field
 	@DBRef(lazy = true)
@@ -63,11 +67,13 @@ public class PrimaryEntity extends BaseEntity {
 		this.primaryData = primaryData;
 	}
 
-	public LocalDateTime getTimeData() {
+	@JsonFormat(pattern = "HH:mm:ss!yyyy-MM-dd")
+	public Date getTimeData() {
 		return timeData;
 	}
 
-	public void setTimeData(LocalDateTime timeData) {
+	@JsonFormat(pattern = "HH:mm:ss@yyyy-MM-dd")
+	public void setTimeData(Date timeData) {
 		this.timeData = timeData;
 	}
 

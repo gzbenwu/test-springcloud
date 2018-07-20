@@ -94,7 +94,7 @@ public class Controller {
 
 		PrimaryEntity pe = new PrimaryEntity();
 		pe.setPrimaryData(UUID.randomUUID().toString());
-		pe.setTimeData(LocalDateTime.now());
+		pe.setTimeData(new Date());
 		pe.setSubEntity(se);
 		pe.setSubEntityId(se.getId());
 		pe.setSubEntityBody(se);
@@ -145,7 +145,7 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/transformRestTemplate/{date1}", method = { RequestMethod.POST })
-	public SubEntity transformRestTemplate(@PathVariable("date1") LocalDateTime date1, @RequestParam("date2") Date date2, @RequestBody SubEntity json) {
+	public PrimaryEntity transformRestTemplate(@PathVariable("date1") LocalDateTime date1, @RequestParam("date2") Date date2, @Valid @RequestBody PrimaryEntity json) {
 		try {
 			// String json = "{\r\n" +
 			// " \"timeData\":\"2012|12|12@12!12!12\",\r\n" +
