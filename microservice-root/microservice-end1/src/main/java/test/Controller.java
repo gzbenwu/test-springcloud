@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +29,7 @@ import test.entity.validator.ValidtorGroup_NoNeedCheck;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -138,19 +140,27 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/transformOne", method = { RequestMethod.POST })
-	public String transformOne(@RequestBody SubEntity entity) {
-		return "{\"timeData\":\"2012 10/12 12:12:12\"}";
+	public String transformOne(@RequestBody String entity) {
+		return "{\"timeData\":\"2019|12|19@19!19!19\"}";
 	}
 
-	@RequestMapping(value = "/transformRestTemplate", method = { RequestMethod.POST })
-	public SubEntity transformRestTemplate(@RequestBody SubEntity entity) {
+	@RequestMapping(value = "/transformRestTemplate/{date1}", method = { RequestMethod.POST })
+	public SubEntity transformRestTemplate(@PathVariable("date1") LocalDateTime date1, @RequestParam("date2") Date date2, @RequestBody SubEntity json) {
 		try {
-			String json = "{\"timeData\":\"2000 10/12 12:12:12\"}";
+			// String json = "{\r\n" +
+			// " \"timeData\":\"2012|12|12@12!12!12\",\r\n" +
+			// " \"defaultFormat\":\"2013-11-13 13:13:13\",\r\n" +
+			// " \"defaultDate\":\"2014-11-14 14:14:14\",\r\n" +
+			// " \"inOutDifferent\":\"15:15:15 2015-11-15\",\r\n" +
+			// " \"createdDate\":\"2016-11-16@@@@16*16*16\",\r\n" +
+			// " \"lastModifiedDate\":\"11/17/2017-17,17,17\"\r\n" +
+			// "}";
 			HttpHeaders hh = new HttpHeaders();
 			hh.setContentType(MediaType.APPLICATION_JSON_UTF8);
-			RequestEntity<String> re = new RequestEntity<String>(json, hh, HttpMethod.POST, new URI("http://microservice-end1/transformOne"));
+			RequestEntity<Object> re = new RequestEntity<Object>(json, hh, HttpMethod.POST, new URI("http://microservice-end1/transformOne"));
 			ResponseEntity<SubEntity> res = restTemplate.exchange(re, SubEntity.class);
-			return res.getBody();
+			res.getBody();
+			return json;
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}

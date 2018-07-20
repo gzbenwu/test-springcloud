@@ -2,11 +2,10 @@ package test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.RestTemplate;
 
 @SpringCloudApplication
 @EnableMongoAuditing
@@ -16,10 +15,9 @@ public class End1Service {
 	}
 
 	@Bean
-	public ObjectMapper serializingObjectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.findAndRegisterModules();
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		return objectMapper;
+	@LoadBalanced
+	public RestTemplate restTemplate() {
+		RestTemplate restTemplate = new RestTemplate();
+		return restTemplate;
 	}
 }

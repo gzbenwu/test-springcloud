@@ -11,8 +11,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import test.entity.autoincrement.AutoIncrementId;
 import test.entity.validator.TestValidatorAnnotation;
 import test.entity.validator.ValidtorGroup_NeedCheck;
@@ -65,12 +63,10 @@ public class PrimaryEntity extends BaseEntity {
 		this.primaryData = primaryData;
 	}
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	public LocalDateTime getTimeData() {
 		return timeData;
 	}
 
-	@JsonFormat(pattern = "yyyy MM/dd HH:mm:ss")
 	public void setTimeData(LocalDateTime timeData) {
 		this.timeData = timeData;
 	}

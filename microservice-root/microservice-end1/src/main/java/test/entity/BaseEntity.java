@@ -49,7 +49,7 @@ public abstract class BaseEntity implements Serializable {
 	@CreatedDate
 	@Field
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private LocalDateTime createdDate;
+	private Date createdDate;
 
 	@CreatedBy
 	@Field
@@ -57,7 +57,7 @@ public abstract class BaseEntity implements Serializable {
 
 	@LastModifiedDate
 	@Field
-	@JsonFormat(pattern = "HH:mm:ss")
+	@JsonFormat(pattern = "MM/dd/yyyy-HH,mm,ss")
 	private LocalDateTime lastModifiedDate;
 
 	@LastModifiedBy
@@ -108,11 +108,11 @@ public abstract class BaseEntity implements Serializable {
 		this.version = version;
 	}
 
-	public LocalDateTime getCreatedDate() {
+	public Date getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(LocalDateTime createdDate) {
+	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
 
