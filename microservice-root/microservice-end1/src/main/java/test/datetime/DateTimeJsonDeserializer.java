@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -26,35 +28,7 @@ public class DateTimeJsonDeserializer<T> extends JsonDeserializer<T> {
 	public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		final DateTimeFormatterHolder holder = new DateTimeFormatterHolder();
 		holder.jsc = p.getParsingContext();
-		if (holder.jsc.getCurrentName() == null || holder.jsc.getCurrentValue() == null) {
-			for (int i = 0; i < 10; i++) {
-				holder.jsc = holder.jsc.getParent();
-				if (holder.jsc == null || (holder.jsc.getCurrentName() != null && holder.jsc.getCurrentValue() != null)) {
-					break;
-				}
-			}
-		}
-		if (holder.jsc != null && holder.jsc.getCurrentName() != null && holder.jsc.getCurrentValue() != null) {
-			ReflectionUtils.doWithMethods(holder.jsc.getCurrentValue().getClass(), (method) -> {
-				JsonFormat jf = method.getAnnotation(JsonFormat.class);
-				if (jf != null && jf.pattern() != null) {
-					holder.format = jf.pattern();
-				}
-			}, (method) -> {
-				return method.getName().equalsIgnoreCase("set".concat(holder.jsc.getCurrentName()));
-			});
-
-			if (holder.format == null) {
-				ReflectionUtils.doWithFields(holder.jsc.getCurrentValue().getClass(), (field) -> {
-					JsonFormat jf = field.getAnnotation(JsonFormat.class);
-					if (jf != null && jf.pattern() != null) {
-						holder.format = jf.pattern();
-					}
-				}, (field) -> {
-					return field.getName().equals(holder.jsc.getCurrentName());
-				});
-			}
-		}
+		prepareDateTimeFormatterHolder(holder, "set");
 
 		if (holder.format == null) {
 			holder.format = SystemDefaultDateTimeFormater.format;
@@ -72,5 +46,37 @@ public class DateTimeJsonDeserializer<T> extends JsonDeserializer<T> {
 			}
 		}
 		return dateTime;
+	}
+
+	public static void prepareDateTimeFormatterHolder(DateTimeFormatterHolder holder, String methodType) {
+		if (holder.jsc.getCurrentName() == null || holder.jsc.getCurrentValue() == null || holder.jsc.getCurrentValue() instanceof Map || holder.jsc.getCurrentValue() instanceof Collection) {
+			for (int i = 0; i < 10; i++) {
+				holder.jsc = holder.jsc.getParent();
+				if (holder.jsc == null || (holder.jsc.getCurrentName() != null && holder.jsc.getCurrentValue() != null && !(holder.jsc.getCurrentValue() instanceof Map) && !(holder.jsc.getCurrentValue() instanceof Collection))) {
+					break;
+				}
+			}
+		}
+		if (holder.jsc != null && holder.jsc.getCurrentName() != null && holder.jsc.getCurrentValue() != null && !(holder.jsc.getCurrentValue() instanceof Map) && !(holder.jsc.getCurrentValue() instanceof Collection)) {
+			ReflectionUtils.doWithMethods(holder.jsc.getCurrentValue().getClass(), (method) -> {
+				JsonFormat jf = method.getAnnotation(JsonFormat.class);
+				if (jf != null && jf.pattern() != null) {
+					holder.format = jf.pattern();
+				}
+			}, (method) -> {
+				return method.getName().equalsIgnoreCase(methodType.concat(holder.jsc.getCurrentName()));
+			});
+
+			if (holder.format == null) {
+				ReflectionUtils.doWithFields(holder.jsc.getCurrentValue().getClass(), (field) -> {
+					JsonFormat jf = field.getAnnotation(JsonFormat.class);
+					if (jf != null && jf.pattern() != null) {
+						holder.format = jf.pattern();
+					}
+				}, (field) -> {
+					return field.getName().equals(holder.jsc.getCurrentName());
+				});
+			}
+		}
 	}
 }
