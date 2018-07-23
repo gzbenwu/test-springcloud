@@ -5,10 +5,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.ConversionNotSupportedException;
-import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -25,43 +23,33 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 @ResponseBody
 public class RestExceptionHandler {
 	@ExceptionHandler(value = Exception.class)
-	public Map<String, String> defaultErrorHandler(HttpServletRequest req, HttpServletResponse res, Exception ex) throws Exception {
-		Map<String, String> r = new HashMap<String, String>();
-		if (ex instanceof org.springframework.web.servlet.NoHandlerFoundException) {
-			r.put("status", "" + HttpStatus.NOT_FOUND.value());
-			res.setStatus(HttpStatus.NOT_FOUND.value());
-		} else {
-			r.put("status", "" + HttpStatus.INTERNAL_SERVER_ERROR.value());
-			res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		}
-		r.put("message", ex.getMessage());
-		r.put("path", req.getRequestURI());
-		r.put("error", ex.getClass().getSimpleName());
-		r.put("timestamp", "" + System.currentTimeMillis());
-		r.put("customErrorInfo", "true");
-		return r;
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	public Map<String, String> defaultErrorHandler(HttpServletRequest req, Exception ex) throws Exception {
+		return buildErrInfo(HttpStatus.INTERNAL_SERVER_ERROR, req, ex);
 	}
 
-	@ExceptionHandler({ MissingServletRequestParameterException.class, HttpMessageNotReadableException.class, TypeMismatchException.class })
+	@ExceptionHandler({ MissingServletRequestParameterException.class, HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class })
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public String requestNotReadable(HttpServletRequest req, RuntimeException ex) {
-		return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+	public Map<String, String> badRequest(HttpServletRequest req, Exception ex) {
+		return buildErrInfo(HttpStatus.BAD_REQUEST, req, ex);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public String methodArgumentNotValidException(HttpServletRequest req, MethodArgumentNotValidException ex) {
+	public Map<String, String> methodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException ex) {
+		Map<String, String> res = buildErrInfo(HttpStatus.BAD_REQUEST, req, ex);
 		String msg = handleArgumentNotValid(ex.getBindingResult());
-		if (msg == null) {
-			return ex.getClass().getSimpleName() + ":" + ex.getMessage();
-		} else {
-			return "[Build By RestExceptionHandler] " + msg;
+		if (msg != null) {
+			res.put("message", "MethodArgumentNotValid:" + msg);
 		}
+		return res;
 	}
 
 	public static String handleArgumentNotValid(BindingResult validResult) {
@@ -92,27 +80,38 @@ public class RestExceptionHandler {
 		}
 	}
 
-	@ExceptionHandler(NoSuchMethodException.class)
+	@ExceptionHandler({ NoHandlerFoundException.class, NoSuchMethodException.class })
 	@ResponseStatus(code = HttpStatus.NOT_FOUND)
-	public String noSuchMethodExceptionHandler(HttpServletRequest req, NoSuchMethodException ex) {
-		return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+	public Map<String, String> request404(HttpServletRequest req, Exception ex) {
+		return buildErrInfo(HttpStatus.NOT_FOUND, req, ex);
 	}
 
 	@ExceptionHandler({ HttpRequestMethodNotSupportedException.class })
 	@ResponseStatus(code = HttpStatus.METHOD_NOT_ALLOWED)
-	public String request405(HttpServletRequest req, HttpRequestMethodNotSupportedException ex) {
-		return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+	public Map<String, String> request405(HttpServletRequest req, Exception ex) {
+		return buildErrInfo(HttpStatus.METHOD_NOT_ALLOWED, req, ex);
 	}
 
 	@ExceptionHandler({ HttpMediaTypeNotAcceptableException.class, HttpMediaTypeNotSupportedException.class })
 	@ResponseStatus(code = HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-	public String request406(HttpServletRequest req, RuntimeException ex) {
-		return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+	public Map<String, String> request415(HttpServletRequest req, Exception ex) {
+		return buildErrInfo(HttpStatus.UNSUPPORTED_MEDIA_TYPE, req, ex);
 	}
 
 	@ExceptionHandler({ ConversionNotSupportedException.class, HttpMessageNotWritableException.class })
 	@ResponseStatus(code = HttpStatus.SERVICE_UNAVAILABLE)
-	public String server500(HttpServletRequest req, RuntimeException ex) {
-		return ex.getClass().getSimpleName() + ":" + ex.getMessage();
+	public Map<String, String> server503(HttpServletRequest req, Exception ex) {
+		return buildErrInfo(HttpStatus.SERVICE_UNAVAILABLE, req, ex);
+	}
+
+	private static Map<String, String> buildErrInfo(HttpStatus hs, HttpServletRequest req, Exception ex) {
+		Map<String, String> r = new HashMap<String, String>();
+		r.put("status", "" + hs.value());
+		r.put("message", ex.getMessage());
+		r.put("path", req.getRequestURI());
+		r.put("error", ex.getClass().getSimpleName());
+		r.put("timestamp", "" + System.currentTimeMillis());
+		r.put("customErrorInfo", "true");
+		return r;
 	}
 }
