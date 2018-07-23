@@ -31,18 +31,19 @@ public class SystemDefaultDateTimeFormater {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-		// 这里只对Date类型转换有效，如果Bean中定义为LocalDateTime,ZonedDateTime等类型都无效
-		// SimpleDateFormat smt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		// objectMapper.setDateFormat(smt);
-
 		// jackson-datatype-jsr310的补充和复盖，修改默认的日期格式
 		SimpleModule defaultDateTimeModule = new SimpleModule();
 		defaultDateTimeModule.addDeserializer(LocalDateTime.class, new DateTimeJsonDeserializer<>(LocalDateTime.class));
 		defaultDateTimeModule.addSerializer(LocalDateTime.class, new DateTimeJsonSerializer<>());
 		defaultDateTimeModule.addDeserializer(Date.class, new DateTimeJsonDeserializer<>(Date.class));
 		defaultDateTimeModule.addSerializer(Date.class, new DateTimeJsonSerializer<>());
-
 		objectMapper.registerModule(defaultDateTimeModule);
+
+		// 这里只能对Date类型转换有效，如果Bean中定义为LocalDateTime,ZonedDateTime等类型都无效
+		// 如果上面给Date.class配置了register会使用该module的代码，本设置不会生效。
+		// SimpleDateFormat smt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		// objectMapper.setDateFormat(smt);
+
 		return objectMapper;
 	}
 
