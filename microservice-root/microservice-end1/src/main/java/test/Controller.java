@@ -145,7 +145,7 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/transformRestTemplate/{date1}", method = { RequestMethod.POST })
-	public PrimaryEntity transformRestTemplate(@PathVariable("date1") LocalDateTime date1, @RequestParam("date2") Date date2, @Valid @RequestBody PrimaryEntity json) {
+	public Map<String, PrimaryEntity> transformRestTemplate(@PathVariable("date1") LocalDateTime date1, @RequestParam("date2") Date date2, @Valid @RequestBody Map<String, PrimaryEntity> json) {
 		try {
 			// String json = "{\r\n" +
 			// " \"timeData\":\"2012|12|12@12!12!12\",\r\n" +

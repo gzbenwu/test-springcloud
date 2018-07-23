@@ -1,6 +1,7 @@
 package test.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
@@ -8,6 +9,7 @@ import javax.validation.groups.Default;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -46,6 +48,9 @@ public class PrimaryEntity extends BaseEntity {
 
 	@Field
 	private SubEntity subEntityBody;
+
+	@Transient
+	private List<SubEntity> subEntityList;
 
 	@Field
 	@TestValidatorAnnotation(message = "Custome Validate Msg!")
@@ -99,5 +104,13 @@ public class PrimaryEntity extends BaseEntity {
 
 	public void setSubEntityBody(SubEntity subEntityBody) {
 		this.subEntityBody = subEntityBody;
+	}
+
+	public List<SubEntity> getSubEntityList() {
+		return subEntityList;
+	}
+
+	public void setSubEntityList(List<SubEntity> subEntityList) {
+		this.subEntityList = subEntityList;
 	}
 }
