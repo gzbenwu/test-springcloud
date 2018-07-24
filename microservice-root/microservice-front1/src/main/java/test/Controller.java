@@ -2,6 +2,7 @@ package test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,9 @@ public class Controller {
 	private String port;
 
 	@Autowired
+	private Environment env;
+
+	@Autowired
 	private RestTemplate restTemplate;
 
 	@Autowired
@@ -41,6 +45,7 @@ public class Controller {
 		res.addHeader("HD_SEN_ALL", "SSSSSSS");
 		res.addHeader("HD_IRN_ALL", "IIIIII");
 		res.addHeader("A", "111111");
+		map.put("ENV:appConfigKey", env.getProperty("custom.test.appConfigKey"));
 		return map;
 	}
 
