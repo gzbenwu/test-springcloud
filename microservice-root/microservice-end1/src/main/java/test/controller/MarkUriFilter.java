@@ -22,7 +22,7 @@ public class MarkUriFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
-		requestUri.set(Thread.currentThread().getId() + ":" + URLDecoder.decode(req.getRequestURI() + "?" + req.getQueryString(), "ISO8859-1"));
+		requestUri.set(Thread.currentThread().getId() + ":" + URLDecoder.decode(req.getRequestURI() + (req.getQueryString() == null ? "" : "?" + req.getQueryString()), "ISO8859-1"));
 		chain.doFilter(request, response);
 	}
 

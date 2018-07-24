@@ -2,6 +2,10 @@ package test.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -36,9 +40,11 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -130,6 +136,25 @@ public class Controller {
 		StringBuilder sb = testService.doSomething("What?", 100);
 		System.out.println("Controller..........." + sb.toString());
 		return pe;
+	}
+
+	@RequestMapping(value = "/getPrimaryList1/{pageSize}/{version}/{subEntityId}", method = { RequestMethod.GET })
+	public List<PrimaryEntity> getList1(@PathVariable("pageSize") int pageSize, @PathVariable("version") Long version, @PathVariable("subEntityId") String subEntityId) throws Exception {
+		Pageable page = new PageRequest(0, pageSize, new Sort(new Order(Sort.Direction.DESC, "createdDate"), new Order(Sort.Direction.ASC, "primaryData")));
+		List<PrimaryEntity> pes = primaryEntityRepository.findByCustom(version, subEntityId, page);
+		pes.stream().forEach(pe -> pe.setSubEntity(null));
+		return pes;
+	}
+
+	@RequestMapping(value = "/getPrimaryList2", method = { RequestMethod.POST })
+	public List<PrimaryEntity> getList2(@RequestBody Map<String, Object> body) throws Exception {
+		Pageable page = new PageRequest(0, new Integer((String) body.get("pageSize")).intValue(), new Sort(new Order(Sort.Direction.DESC, "createdDate"), new Order(Sort.Direction.ASC, "primaryData")));
+		@SuppressWarnings("unchecked")
+		List<Integer> vers = (List<Integer>) body.get("versions");
+		List<Long> list = vers.stream().map(ver -> ver.longValue()).collect(Collectors.toList());
+		List<PrimaryEntity> pes = primaryEntityRepository.findByVersionIn(list, page);
+		pes.stream().forEach(pe -> pe.setSubEntity(null));
+		return pes;
 	}
 
 	@RequestMapping(value = "/updateSub", method = { RequestMethod.POST })
