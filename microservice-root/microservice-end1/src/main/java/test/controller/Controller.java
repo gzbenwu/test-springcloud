@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import test.ConfigrationPropertySource;
+import test.aop.TestService;
 import test.bean.BigBean;
 import test.entity.PrimaryEntity;
 import test.entity.SubEntity;
@@ -58,7 +59,6 @@ public class Controller {
 
 	@Autowired
 	private ConfigrationPropertySource configrationPropertySource;
-
 	@Autowired
 	private Validator validator;
 	@Autowired
@@ -69,6 +69,8 @@ public class Controller {
 	private SubEntityRepository subEntityRepository;
 	@Autowired
 	private ObjectMapper objectMapper;
+	@Autowired
+	private TestService testService;
 
 	@RequestMapping(value = "/serverLink", method = { RequestMethod.GET })
 	public String getServerLink(HttpServletRequest req) throws JsonProcessingException {
@@ -121,10 +123,12 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/getPrimary/{id}", method = { RequestMethod.GET })
-	public PrimaryEntity getOne(@PathVariable("id") String id) {
+	public PrimaryEntity getOne(@PathVariable("id") String id) throws Exception {
 		PrimaryEntity pe = primaryEntityRepository.findOne(id);
 		// Lazy模式下，当调用该对象的时候才会再次到MongoDB中获取对象数据。如果在这里把该代理对象去掉，就可以不再关联了。
 		pe.setSubEntity(null);
+		StringBuilder sb = testService.doSomething("What?", 100);
+		System.out.println("Controller..........." + sb.toString());
 		return pe;
 	}
 
