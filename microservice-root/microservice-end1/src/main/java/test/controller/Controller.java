@@ -1,4 +1,4 @@
-package test;
+package test.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import test.ConfigrationPropertySource;
 import test.bean.BigBean;
 import test.entity.PrimaryEntity;
 import test.entity.SubEntity;

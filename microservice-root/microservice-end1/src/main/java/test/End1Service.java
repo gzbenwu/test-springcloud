@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringCloudApplication
 @EnableMongoAuditing
-@ComponentScan(basePackages = { "test" }, excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = { ControllerInterceptor.class }) })
+@ComponentScan(basePackages = { "test" }, excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = { ExcludedConfig.class }) })
 public class End1Service {
 	public static void main(String[] args) {
 		SpringApplication.run(End1Service.class, args);

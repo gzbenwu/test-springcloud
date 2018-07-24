@@ -1,4 +1,4 @@
-package test;
+package test.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindingResult;
@@ -30,9 +32,12 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @ResponseBody
 public class RestExceptionHandler {
 	@ExceptionHandler(value = Exception.class)
-	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-	public Map<String, String> defaultErrorHandler(HttpServletRequest req, Exception ex) throws Exception {
-		return buildErrInfo(HttpStatus.INTERNAL_SERVER_ERROR, req, ex);
+	public ResponseEntity<Map<String, String>> defaultErrorHandler(HttpServletRequest req, Exception ex) throws Exception {
+		Map<String, String> err = buildErrInfo(HttpStatus.INTERNAL_SERVER_ERROR, req, ex);
+		HttpHeaders header = new HttpHeaders();
+		header.add("err-header", err.get("error"));
+		ResponseEntity<Map<String, String>> res = new ResponseEntity<Map<String, String>>(err, header, HttpStatus.INTERNAL_SERVER_ERROR);
+		return res;
 	}
 
 	@ExceptionHandler({ MissingServletRequestParameterException.class, HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class })
@@ -108,8 +113,9 @@ public class RestExceptionHandler {
 		Map<String, String> r = new HashMap<String, String>();
 		r.put("status", "" + hs.value());
 		r.put("message", ex.getMessage());
-		r.put("path", req.getRequestURI());
+		r.put("path", MarkUriFilter.getRequestUri());
 		r.put("error", ex.getClass().getSimpleName());
+		r.put("threadId", "" + Thread.currentThread().getId());
 		r.put("timestamp", "" + System.currentTimeMillis());
 		r.put("customErrorInfo", "true");
 		return r;
