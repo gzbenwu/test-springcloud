@@ -9,6 +9,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -18,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringCloudApplication
 @EnableMongoAuditing
+@ComponentScan(basePackages = { "test" }, excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = { ControllerInterceptor.class }) })
 public class End1Service {
 	public static void main(String[] args) {
 		SpringApplication.run(End1Service.class, args);
