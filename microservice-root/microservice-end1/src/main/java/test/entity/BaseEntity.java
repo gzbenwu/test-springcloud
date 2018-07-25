@@ -31,6 +31,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -53,7 +54,7 @@ public abstract class BaseEntity implements Serializable {
 
 	@CreatedBy
 	@Field
-	private String createdBy;
+	private User createdBy;
 
 	@LastModifiedDate
 	@Field
@@ -62,7 +63,8 @@ public abstract class BaseEntity implements Serializable {
 
 	@LastModifiedBy
 	@Field
-	private String lastModifiedBy;
+	@DBRef
+	private User lastModifiedBy;
 
 	// ====================================================================================
 	@Null
@@ -116,11 +118,11 @@ public abstract class BaseEntity implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public String getCreatedBy() {
+	public User getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -132,11 +134,11 @@ public abstract class BaseEntity implements Serializable {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getLastModifiedBy() {
+	public User getLastModifiedBy() {
 		return lastModifiedBy;
 	}
 
-	public void setLastModifiedBy(String lastModifiedBy) {
+	public void setLastModifiedBy(User lastModifiedBy) {
 		this.lastModifiedBy = lastModifiedBy;
 	}
 }
