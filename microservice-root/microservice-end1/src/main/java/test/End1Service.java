@@ -27,7 +27,7 @@ public class End1Service {
 		SpringApplication.run(End1Service.class, args);
 	}
 
-	@Bean
+	@Bean(initMethod = "hashCode")
 	@LoadBalanced
 	@Autowired
 	public RestTemplate restTemplate(ObjectMapper objectMapper) {
