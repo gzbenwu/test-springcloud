@@ -30,6 +30,7 @@ import test.bean.BigBean;
 import test.entity.PrimaryEntity;
 import test.entity.SubEntity;
 import test.entity.repository.PrimaryEntityRepository;
+import test.entity.repository.PrimaryEntityRepositoryCustom;
 import test.entity.repository.SubEntityRepository;
 import test.entity.validator.ValidtorGroup_NeedCheck;
 import test.entity.validator.ValidtorGroup_NoNeedCheck;
@@ -73,6 +74,8 @@ public class Controller {
 	private PrimaryEntityRepository primaryEntityRepository;
 	@Autowired
 	private SubEntityRepository subEntityRepository;
+	@Autowired
+	private PrimaryEntityRepositoryCustom primaryEntityRepositoryImpl;
 	@Autowired
 	private ObjectMapper objectMapper;
 	@Autowired
@@ -153,6 +156,14 @@ public class Controller {
 		List<Integer> vers = (List<Integer>) body.get("versions");
 		List<Long> list = vers.stream().map(ver -> ver.longValue()).collect(Collectors.toList());
 		List<PrimaryEntity> pes = primaryEntityRepository.findByVersionIn(list, page);
+		pes.stream().forEach(pe -> pe.setSubEntity(null));
+		return pes;
+	}
+
+	@RequestMapping(value = "/getPrimaryList3", method = { RequestMethod.GET })
+	public List<PrimaryEntity> getList3(@RequestParam long version, @RequestParam int start, @RequestParam int size) throws Exception {
+		Pageable page = new PageRequest(start, size, new Sort(new Order(Sort.Direction.DESC, "createdDate"), new Order(Sort.Direction.ASC, "primaryData")));
+		List<PrimaryEntity> pes = primaryEntityRepositoryImpl.findByAggregationForVersion(version, page);
 		pes.stream().forEach(pe -> pe.setSubEntity(null));
 		return pes;
 	}
